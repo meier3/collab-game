@@ -1,17 +1,36 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native';
 
 class GridSquare extends Component {
   constructor(props) {
     super(props)
+    this.state = {player_num : 1, waiting : 0}
   }
-
   render() {
-    return (
-      <View style={styles.square}>
-        <Text>{this.props.type}</Text>
-      </View>
-    )
+      switch (this.props.type) {
+        case "0":
+          return (
+          <View style={styles.square}>
+          </View>)
+        case "1":
+          return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
+          </View>
+          )
+        case "2":
+          return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
+            </View>
+          )
+        case "3":
+          return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
+          </View>
+          )
+        }
   }
 }
 
@@ -99,6 +118,53 @@ class App extends Component {
     // return y;
   }
 
+
+  button_left = function(options) {
+      if(this.state.player_num == 1)
+      {
+        return {
+            transform: [{ rotate: '180deg'}],
+            height: "10em",
+          }
+      }
+      else
+      {
+        return {
+          transform: [{ rotate: '90deg'}],
+          height: "10em"
+         }
+      }
+   }
+   button_right = function(options) {
+     if(this.state.player_num == 1)
+     {
+       return {
+         height: "10em"
+       }
+     }
+     else
+     {
+       return {
+         transform: [{ rotate: '270deg'}],
+         height: "10em"
+        }
+     }
+  }
+
+  opacity = function(options) {
+      if(this.state.waiting == 0)
+      {
+        return{
+          opacity: .3
+        }
+      }
+      else
+      {
+        return{}
+      }
+    }
+
+
   render() {
 
     var player = 1;
@@ -113,15 +179,21 @@ class App extends Component {
 
         <View style={styles.controls}>
           <TouchableHighlight style={styles.button} onPress={this.leftPress}>
-            <View style={styles.row} />
+            <View  style = {this.opacity()}>
+              <Image style= {this.button_left()} resizeMode='contain' source = {require("./assets/rightarrow.png")} />
+            </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.button} onPress={this.middlePress}>
-            <View style={styles.row} />
+            <View  style = {this.opacity()}>
+              <Image style= {styles.row} resizeMode='contain' source = {require("./assets/button.png")} />
+            </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.button} onPress={this.rightPress}>
-            <View style={styles.row} />
+            <View  style = {this.opacity()}>
+              <Image style= {this.button_right()} resizeMode='contain' source = {require("./assets/rightarrow.png")} />
+            </View>
           </TouchableHighlight>
         </View>
 
@@ -170,6 +242,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: 'gray',
     borderWidth: 2,
+  },
+  gridImage: {
+    height: "100%"
   },
 });
 
