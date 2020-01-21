@@ -8,6 +8,7 @@ const _grid = [
   [1, 1, 1, 3]
 ]
 
+
 class GridSquare extends Component {
   constructor(props) {
     super(props)
@@ -30,53 +31,54 @@ class App extends Component {
     this.state = {
       grid: _grid,
       spritePos: this.props.startPos,
-      prevPos: this.props.startPos,
     };
+  }
+
+  componentDidMount() {
     this.updateGrid();
   }
 
   leftPress = () => {
-    this.state.spritePos[1] -= 1;
-    this.updateGrid();
-    console.log('left press');
+    // console.log('left press');
+    let pos = this.state.spritePos;
+    this.updateSprite([pos[0], pos[1] - 1])
   };
 
   middlePress = () => {
-    console.log('pass');
+    // console.log('pass');
+    // this.setState(() => { player:  });
   };
 
   rightPress = () => {
-    this.state.spritePos[1] += 1;
-    this.updateGrid();
-    console.log('right press');
+    // console.log('right press');
+    let pos = this.state.spritePos;
+    this.updateSprite([pos[0], pos[1] + 1])
   };
 
-  updateGrid = () => {
+  updateSprite(pos) {
+    // TODO: if (left or right)
+    this.setState({ spritePos: pos }, () => {
+      console.log("sprite updated: ", pos);
+    });
 
-    let newGrid = this.state.grid;
-    // let pos = this.state.spritePos;
-    // newGrid[pos[0]][pos[1]] = 2;
-    
-    let newSpace = this.state.spritePos
-    let oldSpace = this.state.prevPos
-    // reset old sprite location
-    newGrid[oldSpace[0]][oldSpace[1]] = 0;
-    // update new sprite location
-    newGrid[newSpace[0]][newSpace[1]] = 2;
-    
-    console.log(newGrid[0]);
-    console.log(this.state.grid[0]);
-    console.log(this.props.mainGrid[0]);
-    console.log(_grid[0]);
-    
-    this.setState(() => (
-      { grid: newGrid }
-    ))
+    setTimeout(() => {
+      this.updateGrid();
+    }, 0);
+  };
+
+  updateGrid() {
+    // deep copy blank grid
+    let newGrid = JSON.parse(JSON.stringify(_grid));
+    // add sprite
+    let pos = this.state.spritePos;
+    newGrid[pos[0]][pos[1]] = 2;
+    // update the grid
+    this.setState({ grid: newGrid })
   };
 
   renderGrid() {
     let output = [];
-    let grid = this.state.grid
+    let grid = this.state.grid;
     let counter = 0;
 
     // iterate through grid data, create GridSquares accordingly
@@ -95,7 +97,6 @@ class App extends Component {
   }
 
   render() {
-
     return (
       <View style={styles.body}>
 
@@ -125,7 +126,7 @@ class App extends Component {
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
   mainGrid: _grid,
-  startPos: [0,0],
+  startPos: [0, 0],
 };
 
 const styles = StyleSheet.create({
