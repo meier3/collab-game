@@ -1,6 +1,13 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 
+const _grid = [
+  [0, 0, 0, 0],
+  [1, 1, 1, 0],
+  [1, 1, 1, 0],
+  [1, 1, 1, 3]
+]
+
 class GridSquare extends Component {
   constructor(props) {
     super(props)
@@ -15,94 +22,79 @@ class GridSquare extends Component {
   }
 }
 
+
 class App extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      grid: [[2, 0, 0, 0],
-      [1, 1, 1, 0],
-      [1, 1, 1, 0],
-      [1, 1, 1, 3]],
-    }
+      grid: _grid,
+      spritePos: this.props.startPos,
+      prevPos: this.props.startPos,
+    };
+    this.updateGrid();
   }
 
   leftPress = () => {
-    let newGrid = [[1, 0, 3, 0],
-    [1, 1, 3, 0],
-    [1, 3, 3, 0],
-    [1, 1, 1, 3]];
+    this.state.spritePos[1] -= 1;
+    this.updateGrid();
+    console.log('left press');
+  };
 
+  middlePress = () => {
+    console.log('pass');
+  };
+
+  rightPress = () => {
+    this.state.spritePos[1] += 1;
+    this.updateGrid();
+    console.log('right press');
+  };
+
+  updateGrid = () => {
+
+    let newGrid = this.state.grid;
+    // let pos = this.state.spritePos;
+    // newGrid[pos[0]][pos[1]] = 2;
+    
+    let newSpace = this.state.spritePos
+    let oldSpace = this.state.prevPos
+    // reset old sprite location
+    newGrid[oldSpace[0]][oldSpace[1]] = 0;
+    // update new sprite location
+    newGrid[newSpace[0]][newSpace[1]] = 2;
+    
+    console.log(newGrid[0]);
+    console.log(this.state.grid[0]);
+    console.log(this.props.mainGrid[0]);
+    console.log(_grid[0]);
+    
     this.setState(() => (
       { grid: newGrid }
     ))
-    // console.log('pressed');
   };
-
-  // middlePress = () => {
-  //   console.log(this.counter);
-  // };
-
-  // rightPress = () => {
-  //   console.log(this.counter);
-  // };
-
-  x = <Text>Hello World</Text>;
 
   renderGrid() {
     let output = [];
     let grid = this.state.grid
+    let counter = 0;
 
+    // iterate through grid data, create GridSquares accordingly
     for (let i = 0; i < grid.length; i++) {
       const row = grid[i];
-
       let content = [];
+
       for (let j = 0; j < row.length; j++) {
         const squareVal = row[j];
-
-        // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
-
-        switch (squareVal) {
-          case 0:
-            // empty
-            content.push(<GridSquare type="0" />);
-            break;
-          case 1:
-            // obstacle
-            content.push(<GridSquare type="1" />);
-            break;
-          case 2:
-            // sprite
-            content.push(<GridSquare type="2" />);
-            break;
-          case 3:
-            // finish
-            content.push(<GridSquare type="3" />);
-            break;
-        }
+        content.push(<GridSquare type={squareVal} />)
       }
-
       output.push(<View style={styles.row}>{content}</View>);
     }
 
     return output;
-
-    // let y = [this.x]
-    // let a = <Text>Testing...</Text>;
-    // y.push(<View>{a}</View>);
-    // return y;
-
-    // let y = [this.x];
-    // y.push(<Text>);
-    // y.push(Another one!);
-    // y.push(</Text>);
-    // return y;
   }
 
   render() {
-
-    var player = 1;
-    var gridsize = 3;
 
     return (
       <View style={styles.body}>
@@ -131,7 +123,9 @@ class App extends Component {
 }
 
 App.defaultProps = {
-  counter: 0,
+  // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
+  mainGrid: _grid,
+  startPos: [0,0],
 };
 
 const styles = StyleSheet.create({
