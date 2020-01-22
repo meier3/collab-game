@@ -43,7 +43,7 @@ class App extends Component {
     this.updateSprite([pos[0], pos[1] - 1])
   };
 
-  middlePress = () => {};
+  middlePress = () => { };
 
   rightPress = () => {
     let pos = this.state.spritePos;
@@ -72,7 +72,8 @@ class App extends Component {
   renderGrid() {
     let output = [];
     let grid = this.state.grid;
-    let counter = 0;
+    let squareCounter = 0;
+    let rowCounter = 0;
 
     // iterate through grid data, create GridSquares accordingly
     for (let i = 0; i < grid.length; i++) {
@@ -81,9 +82,11 @@ class App extends Component {
 
       for (let j = 0; j < row.length; j++) {
         const squareVal = row[j];
-        content.push(<GridSquare type={squareVal} />)
+        content.push(<GridSquare type={squareVal} key={squareCounter} />);
+        squareCounter++;
       }
-      output.push(<View style={styles.row}>{content}</View>);
+      output.push(<View style={styles.row} key={rowCounter}>{content}</View>);
+      rowCounter++;
     }
 
     return output;
