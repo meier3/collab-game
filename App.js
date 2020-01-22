@@ -39,18 +39,13 @@ class App extends Component {
   }
 
   leftPress = () => {
-    // console.log('left press');
     let pos = this.state.spritePos;
     this.updateSprite([pos[0], pos[1] - 1])
   };
 
-  middlePress = () => {
-    // console.log('pass');
-    // this.setState(() => { player:  });
-  };
+  middlePress = () => {};
 
   rightPress = () => {
-    // console.log('right press');
     let pos = this.state.spritePos;
     this.updateSprite([pos[0], pos[1] + 1])
   };
@@ -61,6 +56,7 @@ class App extends Component {
       console.log("sprite updated: ", pos);
     });
 
+    // setState is async, this timeout lets it finish before rendering
     setTimeout(() => {
       this.updateGrid();
     }, 0);
