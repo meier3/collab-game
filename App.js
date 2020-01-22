@@ -10,7 +10,7 @@ class GridSquare extends Component {
       case "0":
         return (
           <View style={styles.square}>
-            
+
           </View>
         )
       case "1":
@@ -54,7 +54,7 @@ class App extends Component {
     [1, 1, 3, 0],
     [1, 3, 3, 0],
     [1, 1, 1, 3]];
-
+    
     this.setState(() => (
       { grid: newGrid }
     ))
@@ -170,6 +170,24 @@ class App extends Component {
       }
     }
 
+  popupBox = function(options) {
+    if(this.state.waiting){
+      return {
+        opacity: 1,
+        zIndex: 10,
+        position: "absolute",
+        height: "30%",
+        width: "30%",
+        alignSelf: "center",
+        backgroundColor: "green"
+      }
+    }
+    else {
+      return {
+        opacity: 0,
+      }
+    }
+  }
 
   render() {
 
@@ -177,7 +195,11 @@ class App extends Component {
     var gridsize = 3;
 
     return (
+
       <View style={styles.body}>
+        <View style = {this.popupBox()}>
+          <Text> Waiting for other player. (Switch with waiting image later) </Text>
+        </View>
 
         <View style={styles.gameview}>
           {this.renderGrid()}
