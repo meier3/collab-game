@@ -4,33 +4,34 @@ import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native'
 class GridSquare extends Component {
   constructor(props) {
     super(props)
-    this.state = {player_num : 1, waiting : 0}
   }
   render() {
-      switch (this.props.type) {
-        case "0":
-          return (
+    switch (this.props.type) {
+      case "0":
+        return (
           <View style={styles.square}>
-          </View>)
-        case "1":
-          return (
+            
+          </View>
+        )
+      case "1":
+        return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
           </View>
-          )
-        case "2":
-          return (
+        )
+      case "2":
+        return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
-            </View>
-          )
-        case "3":
-          return (
+          </View>
+        )
+      case "3":
+        return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
           </View>
-          )
-        }
+        )
+    }
   }
 }
 
@@ -43,6 +44,8 @@ class App extends Component {
       [1, 1, 1, 0],
       [1, 1, 1, 0],
       [1, 1, 1, 3]],
+      player_num : 1,
+      waiting : false
     }
   }
 
@@ -120,47 +123,50 @@ class App extends Component {
 
 
   button_left = function(options) {
-      if(this.state.player_num == 1)
-      {
-        return {
-            transform: [{ rotate: '180deg'}],
-            height: "10em",
-          }
+    if(this.state.player_num == 1){
+      return {
+        transform: [{ rotate: '180deg'}],
+        flex:1,
       }
-      else
-      {
-        return {
-          transform: [{ rotate: '90deg'}],
-          height: "10em"
-         }
+    }
+    else {
+      return {
+        transform: [{ rotate: '90deg'}],
+        flex:1,
       }
-   }
-   button_right = function(options) {
-     if(this.state.player_num == 1)
-     {
-       return {
-         height: "10em"
-       }
-     }
-     else
-     {
-       return {
-         transform: [{ rotate: '270deg'}],
-         height: "10em"
-        }
-     }
+    }
+  }
+  button_right = function(options) {
+    if(this.state.player_num == 1){
+      return {
+        flex:1,
+      }
+    }
+    else {
+      return {
+        transform: [{ rotate: '270deg'}],
+        flex:1,
+      }
+    }
   }
 
   opacity = function(options) {
-      if(this.state.waiting == 0)
-      {
-        return{
-          opacity: .3
-        }
+    if(this.state.waiting) {
+      return {
+        opacity: .3,
+        flex:1,
+        flexDirection: 'row',
+        borderColor: 'black',
+        borderWidth: 2,
       }
-      else
-      {
-        return{}
+    }
+    else {
+      return {
+        flex:1,
+        flexDirection: 'row',
+        borderColor: 'black',
+        borderWidth: 2,
+        }
       }
     }
 
@@ -186,7 +192,7 @@ class App extends Component {
 
           <TouchableHighlight style={styles.button} onPress={this.middlePress}>
             <View  style = {this.opacity()}>
-              <Image style= {styles.row} resizeMode='contain' source = {require("./assets/button.png")} />
+              <Image style= {styles.skip} resizeMode='contain' source = {require("./assets/button.png")} />
             </View>
           </TouchableHighlight>
 
@@ -244,7 +250,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   gridImage: {
-    height: "100%"
+    backgroundColor: "white",
+    flex:1
+  },
+  skip: {
+    flex: 1,
   },
 });
 
