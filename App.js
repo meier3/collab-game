@@ -29,7 +29,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      grid: _grid,
+      grid: this.props.mainGrid,
       spritePos: this.props.startPos,
     };
   }
@@ -51,10 +51,7 @@ class App extends Component {
   };
 
   updateSprite(pos) {
-    // TODO: if (left or right)
-    this.setState({ spritePos: pos }, () => {
-      console.log("sprite updated: ", pos);
-    });
+    this.setState({ spritePos: pos });
 
     // setState is async, this timeout lets it finish before rendering
     setTimeout(() => {
