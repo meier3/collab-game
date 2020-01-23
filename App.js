@@ -13,33 +13,27 @@ class GridSquare extends Component {
   constructor(props) {
     super(props)
   }
-  render() {
-    switch (this.props.type) {
-      case "0":
-        return (
-          <View style={styles.square}>
 
-          </View>
-        )
-      case "1":
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
-          </View>
-        )
-      case "2":
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
-          </View>
-        )
-      case "3":
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
-          </View>
-        )
+  render() {
+    var img;
+    switch (this.props.type) {
+      case 0:
+        break;
+      case 1:
+        img = require("./assets/Obstacle.png");
+        break;
+      case 2:
+        img = require("./assets/FrogMan.png");
+        break;
+      case 3:
+        img = require("./assets/End.png");
+        break;
     }
+    return (
+      <View style={styles.square}>
+        <Image style={styles.gridImage} resizeMode='contain' source={img} />
+      </View>
+    )
   }
 }
 
@@ -49,8 +43,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      player_num : 1,
-      waiting : false,
+      player_num: 1,
+      waiting: false,
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
     };
@@ -115,39 +109,39 @@ class App extends Component {
   }
 
 
-  button_left = function(options) {
-    if(this.state.player_num == 1){
+  button_left = function (options) {
+    if (this.state.player_num == 1) {
       return {
-        transform: [{ rotate: '180deg'}],
-        flex:1,
+        transform: [{ rotate: '180deg' }],
+        flex: 1,
       }
     }
     else {
       return {
-        transform: [{ rotate: '90deg'}],
-        flex:1,
+        transform: [{ rotate: '90deg' }],
+        flex: 1,
       }
     }
   }
-  button_right = function(options) {
-    if(this.state.player_num == 1){
+  button_right = function (options) {
+    if (this.state.player_num == 1) {
       return {
-        flex:1,
+        flex: 1,
       }
     }
     else {
       return {
-        transform: [{ rotate: '270deg'}],
-        flex:1,
+        transform: [{ rotate: '270deg' }],
+        flex: 1,
       }
     }
   }
 
-  opacity = function(options) {
-    if(this.state.waiting) {
+  opacity = function (options) {
+    if (this.state.waiting) {
       return {
         opacity: .3,
-        flex:1,
+        flex: 1,
         flexDirection: 'row',
         borderColor: 'black',
         borderWidth: 2,
@@ -155,16 +149,16 @@ class App extends Component {
     }
     else {
       return {
-        flex:1,
+        flex: 1,
         flexDirection: 'row',
         borderColor: 'black',
         borderWidth: 2,
-        }
       }
     }
+  }
 
-  popupBox = function(options) {
-    if(this.state.waiting){
+  popupBox = function (options) {
+    if (this.state.waiting) {
       return {
         opacity: 1,
         zIndex: 10,
@@ -186,7 +180,7 @@ class App extends Component {
     return (
 
       <View style={styles.body}>
-        <View style = {this.popupBox()}>
+        <View style={this.popupBox()}>
           <Text> Waiting for other player. (Switch with waiting image later) </Text>
         </View>
 
@@ -196,20 +190,20 @@ class App extends Component {
 
         <View style={styles.controls}>
           <TouchableHighlight style={styles.button} onPress={this.leftPress}>
-            <View  style = {this.opacity()}>
-              <Image style= {this.button_left()} resizeMode='contain' source = {require("./assets/rightarrow.png")} />
+            <View style={this.opacity()}>
+              <Image style={this.button_left()} resizeMode='contain' source={require("./assets/rightarrow.png")} />
             </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.button} onPress={this.middlePress}>
-            <View  style = {this.opacity()}>
-              <Image style= {styles.skip} resizeMode='contain' source = {require("./assets/button.png")} />
+            <View style={this.opacity()}>
+              <Image style={styles.skip} resizeMode='contain' source={require("./assets/button.png")} />
             </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.button} onPress={this.rightPress}>
-            <View  style = {this.opacity()}>
-              <Image style= {this.button_right()} resizeMode='contain' source = {require("./assets/rightarrow.png")} />
+            <View style={this.opacity()}>
+              <Image style={this.button_right()} resizeMode='contain' source={require("./assets/rightarrow.png")} />
             </View>
           </TouchableHighlight>
         </View>
@@ -236,26 +230,19 @@ const styles = StyleSheet.create({
   gameview: {
     flex: 4,
     alignSelf: 'stretch',
-    borderColor: 'red',
-    borderWidth: 2,
   },
   controls: {
     flex: 1,
     flexDirection: 'row',
     alignSelf: 'stretch',
-    borderColor: 'blue',
-    borderWidth: 2,
   },
   button: {
     flex: 1,
     backgroundColor: 'gray',
-
   },
   row: {
     flex: 1,
     flexDirection: 'row',
-    borderColor: 'black',
-    borderWidth: 2,
   },
   square: {
     flex: 1,
@@ -264,7 +251,7 @@ const styles = StyleSheet.create({
   },
   gridImage: {
     backgroundColor: "white",
-    flex:1
+    flex: 1
   },
   skip: {
     flex: 1,
