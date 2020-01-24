@@ -24,7 +24,6 @@ class GridSquare extends Component {
     var img;
     switch (this.props.type) {
       case 0:
-<<<<<<< HEAD
         break;
       case 1:
         img = require("./assets/Obstacle.png");
@@ -35,31 +34,6 @@ class GridSquare extends Component {
       case 3:
         img = require("./assets/End.png");
         break;
-=======
-        return (
-          <View style={styles.square}>
-
-          </View>
-        )
-      case 1:
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
-          </View>
-        )
-      case 2:
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
-          </View>
-        )
-      case 3:
-        return (
-          <View style={styles.square}>
-            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
-          </View>
-        )
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
     }
     return (
       <View style={styles.square}>
