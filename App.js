@@ -59,7 +59,6 @@ class App extends Component {
 
   componentDidMount() {
     this.updateGrid();
-    var we = new  WebSocket('');
   }
 
   isValidMove(pos) {
