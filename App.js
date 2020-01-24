@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native';
 
 const _grid = [
-  [0, 0, 0, 0],
+  [1, 0, 0, 0],
   [1, 1, 1, 0],
   [1, 1, 1, 0],
   [1, 1, 1, 3]
@@ -54,16 +54,50 @@ class App extends Component {
     this.updateGrid();
   }
 
+  isValidMove(pos) {
+    let r = pos[0], c = pos[1];
+    let gridW = this.state.grid[0].length - 1;
+    let gridH = this.state.grid.length - 1;
+    
+    // check out-of-bounds
+    if ((r < 0) || (c < 0) || (r > gridH) || (c > gridW)) {
+      console.log("out of bounds!")
+      return false;
+    }
+    // check obstacles
+    else if (this.state.grid[r][c] == 1) {
+      console.log("obstacle!")
+      return false;
+    }
+    else {
+      console.log("valid move!")
+      return true;
+    }
+  }
+
   leftPress = () => {
+    // console.log('left press');
     let pos = this.state.spritePos;
-    this.updateSprite([pos[0], pos[1] - 1])
+
+    // if (this.state.player_num == 1) {
+    let newPos = [pos[0], pos[1] - 1];
+
+    if (this.isValidMove(newPos)) {
+      this.updateSprite(newPos);
+    }
+    // }
   };
 
   middlePress = () => { };
 
   rightPress = () => {
     let pos = this.state.spritePos;
-    this.updateSprite([pos[0], pos[1] + 1])
+    // this.updateSprite([pos[0], pos[1] + 1])
+    let newPos = [pos[0], pos[1] + 1];
+
+    if (this.isValidMove(newPos)) {
+      this.updateSprite(newPos);
+    }
   };
 
   updateSprite(pos) {
@@ -216,7 +250,7 @@ class App extends Component {
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
   mainGrid: _grid,
-  startPos: [0, 0],
+  startPos: [0, 1],
 };
 
 const styles = StyleSheet.create({
