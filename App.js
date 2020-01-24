@@ -49,14 +49,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-<<<<<<< HEAD
-      player_num: 1,
-      waiting: false,
-=======
       player_num : 1,
       waiting : false,
       victory : true,
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
     };
@@ -64,6 +59,7 @@ class App extends Component {
 
   componentDidMount() {
     this.updateGrid();
+    var we = new  WebSocket('');
   }
 
   isValidMove(pos) {
@@ -169,14 +165,8 @@ class App extends Component {
     return output;
   }
 
-<<<<<<< HEAD
-
-  button_left = function (options) {
-    if (this.state.player_num == 1) {
-=======
   button_left = function(options) {
     if(this.state.player_num == 1){
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         transform: [{ rotate: '180deg' }],
         flex: 1,
@@ -189,14 +179,9 @@ class App extends Component {
       }
     }
   }
-<<<<<<< HEAD
-  button_right = function (options) {
-    if (this.state.player_num == 1) {
-=======
 
   button_right = function(options) {
     if(this.state.player_num == 1){
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         flex: 1,
       }
@@ -229,10 +214,6 @@ class App extends Component {
     }
   }
 
-<<<<<<< HEAD
-  popupBox = function (options) {
-    if (this.state.waiting) {
-=======
   popupVictory = function(options) {
     if(this.state.victory){
       return {
@@ -259,7 +240,6 @@ class App extends Component {
 
   popupBox = function(options) {
     if(this.state.waiting){
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         opacity: 1,
         zIndex: 10,
@@ -326,12 +306,8 @@ class App extends Component {
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
   mainGrid: _grid,
-<<<<<<< HEAD
-  startPos: [0, 1],
-=======
   anotherGrid : _grid2,
   startPos: [0, 0],
->>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
 };
 
 const styles = StyleSheet.create({
