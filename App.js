@@ -8,6 +8,12 @@ const _grid = [
   [1, 1, 1, 3]
 ]
 
+const _grid2 = [
+  [0, 0, 0, 1],
+  [0, 1, 0, 0],
+  [0, 1, 0, 1],
+  [0, 1, 0, 3]
+]
 
 class GridSquare extends Component {
   constructor(props) {
@@ -18,6 +24,7 @@ class GridSquare extends Component {
     var img;
     switch (this.props.type) {
       case 0:
+<<<<<<< HEAD
         break;
       case 1:
         img = require("./assets/Obstacle.png");
@@ -28,6 +35,31 @@ class GridSquare extends Component {
       case 3:
         img = require("./assets/End.png");
         break;
+=======
+        return (
+          <View style={styles.square}>
+
+          </View>
+        )
+      case 1:
+        return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
+          </View>
+        )
+      case 2:
+        return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
+          </View>
+        )
+      case 3:
+        return (
+          <View style={styles.square}>
+            <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
+          </View>
+        )
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
     }
     return (
       <View style={styles.square}>
@@ -43,8 +75,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+<<<<<<< HEAD
       player_num: 1,
       waiting: false,
+=======
+      player_num : 1,
+      waiting : false,
+      victory : true,
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
     };
@@ -100,6 +138,21 @@ class App extends Component {
     }
   };
 
+  nextLevelPress = () => {
+    if(this.state.victory) {
+      this.setState({ victory : false });
+      this.setState({grid : this.props.anotherGrid});
+      this.setState({spritePos: this.props.startPos});
+      if(this.state.player_num == 1) {
+        this.setState({player_num : 2 })
+      }
+      else {
+        this.setState({player_num : 1 })
+      }
+      this.updateGrid();
+    }
+  };
+
   updateSprite(pos) {
     this.setState({ spritePos: pos });
 
@@ -142,9 +195,14 @@ class App extends Component {
     return output;
   }
 
+<<<<<<< HEAD
 
   button_left = function (options) {
     if (this.state.player_num == 1) {
+=======
+  button_left = function(options) {
+    if(this.state.player_num == 1){
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         transform: [{ rotate: '180deg' }],
         flex: 1,
@@ -157,8 +215,14 @@ class App extends Component {
       }
     }
   }
+<<<<<<< HEAD
   button_right = function (options) {
     if (this.state.player_num == 1) {
+=======
+
+  button_right = function(options) {
+    if(this.state.player_num == 1){
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         flex: 1,
       }
@@ -191,8 +255,37 @@ class App extends Component {
     }
   }
 
+<<<<<<< HEAD
   popupBox = function (options) {
     if (this.state.waiting) {
+=======
+  popupVictory = function(options) {
+    if(this.state.victory){
+      return {
+        opacity: 1,
+        zIndex: 10,
+        position: "absolute",
+        height: "40%",
+        width: "40%",
+        alignSelf: "center",
+        backgroundColor: "blue"
+      }
+    }
+    else {
+      return {
+        opacity: 0,
+        zIndex: 10,
+        position: "absolute",
+        height: "40%",
+        width: "40%",
+        alignSelf: "center",
+      }
+    }
+  }
+
+  popupBox = function(options) {
+    if(this.state.waiting){
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
       return {
         opacity: 1,
         zIndex: 10,
@@ -206,6 +299,11 @@ class App extends Component {
     else {
       return {
         opacity: 0,
+        zIndex: 10,
+        position: "absolute",
+        height: "30%",
+        width: "30%",
+        alignSelf: "center",
       }
     }
   }
@@ -217,7 +315,11 @@ class App extends Component {
         <View style={this.popupBox()}>
           <Text> Waiting for other player. (Switch with waiting image later) </Text>
         </View>
-
+        <TouchableHighlight style = {this.popupVictory()} onPress={this.nextLevelPress}>
+          <View>
+            <Text> Victory!. (Switch with image later) </Text>
+          </View>
+        </TouchableHighlight>
         <View style={styles.gameview}>
           {this.renderGrid()}
         </View>
@@ -250,7 +352,12 @@ class App extends Component {
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
   mainGrid: _grid,
+<<<<<<< HEAD
   startPos: [0, 1],
+=======
+  anotherGrid : _grid2,
+  startPos: [0, 0],
+>>>>>>> 76ff6600d58d1d7c6d960b6a85e0a2cfb3e34c85
 };
 
 const styles = StyleSheet.create({
