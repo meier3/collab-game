@@ -8,6 +8,12 @@ const _grid = [
   [1, 1, 1, 3]
 ]
 
+const _grid2 = [
+  [0, 0, 0, 1],
+  [0, 1, 0, 0],
+  [0, 1, 0, 1],
+  [0, 1, 0, 3]
+]
 
 class GridSquare extends Component {
   constructor(props) {
@@ -15,25 +21,25 @@ class GridSquare extends Component {
   }
   render() {
     switch (this.props.type) {
-      case "0":
+      case 0:
         return (
           <View style={styles.square}>
 
           </View>
         )
-      case "1":
+      case 1:
         return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/Obstacle.png")} />
           </View>
         )
-      case "2":
+      case 2:
         return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/FrogMan.png")} />
           </View>
         )
-      case "3":
+      case 3:
         return (
           <View style={styles.square}>
             <Image style={styles.gridImage} resizeMode='contain' source = {require("./assets/End.png")} />
@@ -51,6 +57,7 @@ class App extends Component {
     this.state = {
       player_num : 1,
       waiting : false,
+      victory : true,
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
     };
@@ -70,6 +77,21 @@ class App extends Component {
   rightPress = () => {
     let pos = this.state.spritePos;
     this.updateSprite([pos[0], pos[1] + 1])
+  };
+
+  nextLevelPress = () => {
+    if(this.state.victory) {
+      this.setState({ victory : false });
+      this.setState({grid : this.props.anotherGrid});
+      this.setState({spritePos: this.props.startPos});
+      if(this.state.player_num == 1) {
+        this.setState({player_num : 2 })
+      }
+      else {
+        this.setState({player_num : 1 })
+      }
+      this.updateGrid();
+    }
   };
 
   updateSprite(pos) {
@@ -114,7 +136,6 @@ class App extends Component {
     return output;
   }
 
-
   button_left = function(options) {
     if(this.state.player_num == 1){
       return {
@@ -129,6 +150,7 @@ class App extends Component {
       }
     }
   }
+
   button_right = function(options) {
     if(this.state.player_num == 1){
       return {
@@ -163,6 +185,30 @@ class App extends Component {
       }
     }
 
+  popupVictory = function(options) {
+    if(this.state.victory){
+      return {
+        opacity: 1,
+        zIndex: 10,
+        position: "absolute",
+        height: "40%",
+        width: "40%",
+        alignSelf: "center",
+        backgroundColor: "blue"
+      }
+    }
+    else {
+      return {
+        opacity: 0,
+        zIndex: 10,
+        position: "absolute",
+        height: "40%",
+        width: "40%",
+        alignSelf: "center",
+      }
+    }
+  }
+
   popupBox = function(options) {
     if(this.state.waiting){
       return {
@@ -178,6 +224,11 @@ class App extends Component {
     else {
       return {
         opacity: 0,
+        zIndex: 10,
+        position: "absolute",
+        height: "30%",
+        width: "30%",
+        alignSelf: "center",
       }
     }
   }
@@ -189,7 +240,11 @@ class App extends Component {
         <View style = {this.popupBox()}>
           <Text> Waiting for other player. (Switch with waiting image later) </Text>
         </View>
-
+        <TouchableHighlight style = {this.popupVictory()} onPress={this.nextLevelPress}>
+          <View>
+            <Text> Victory!. (Switch with image later) </Text>
+          </View>
+        </TouchableHighlight>
         <View style={styles.gameview}>
           {this.renderGrid()}
         </View>
@@ -222,6 +277,7 @@ class App extends Component {
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
   mainGrid: _grid,
+  anotherGrid : _grid2,
   startPos: [0, 0],
 };
 
