@@ -1,6 +1,6 @@
 console.log('WebSocket client script will run here.');
 
-const WebSocket = require('ws');
+const WebSocket = require(['ws']);
 
 const ws = new WebSocket('wss://echo.websocket.org/', {
   origin: 'https://websocket.org'
