@@ -3,39 +3,39 @@ import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native'
 
 const _grid = [
   [
-  [1, 0, 3, 0],
-  [1, 1, 1, 0],
-  [1, 1, 1, 0],
-  [1, 1, 1, 0]],
+    [1, 0, 3, 0],
+    [1, 1, 1, 0],
+    [1, 1, 1, 0],
+    [1, 1, 1, 0]],
   [
-  [0, 0, 0, 1],
-  [0, 1, 0, 0],
-  [0, 1, 0, 1],
-  [0, 1, 0, 3]
+    [0, 0, 0, 1],
+    [0, 1, 0, 0],
+    [0, 1, 0, 1],
+    [0, 1, 0, 3]
   ],
   [
-  [0, 0, 0, 1],
-  [1, 1, 0, 0],
-  [0, 0, 0, 1],
-  [3, 1, 0, 0]
+    [0, 0, 0, 1],
+    [1, 1, 0, 0],
+    [0, 0, 0, 1],
+    [3, 1, 0, 0]
   ],
   [
-  [0, 0, 0, 0],
-  [0, 1, 1, 0],
-  [0, 1, 0, 0],
-  [1, 3, 1, 0]
+    [0, 0, 0, 0],
+    [0, 1, 1, 0],
+    [0, 1, 0, 0],
+    [1, 3, 1, 0]
   ],
   [
-  [0, 0, 1, 1],
-  [0, 1, 0, 0],
-  [1, 0, 0, 1],
-  [0, 1, 1, 3]
+    [0, 0, 1, 1],
+    [0, 1, 0, 0],
+    [1, 0, 0, 1],
+    [0, 1, 1, 3]
   ],
   [
-  [0, 0, 0, 1],
-  [0, 1, 1, 0],
-  [0, 1, 0, 1],
-  [0, 0, 0, 3]
+    [0, 0, 0, 1],
+    [0, 1, 1, 0],
+    [0, 1, 0, 1],
+    [0, 0, 0, 3]
   ]
 ]
 
@@ -68,38 +68,42 @@ class GridSquare extends Component {
   }
 }
 
-
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      player_num : 1,
-      waiting : false,
-      victory : false,
+      player_num: 1,
+      waiting: false,
+      victory: false,
       grid_list: this.props.mainGridList,
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
-      current_grid_number : 0,
+      current_grid_number: 0,
     };
     // Building of connection to server
-    this.ws = new WebSocket('wss://echo.websocket.org');
+    this.ws = new WebSocket('ws://localhost:8080');
   }
 
   componentDidMount() {
 
+    this.ws.bufferType = "arraybuffer";
     //runs whenever message recieved from server
     this.ws.onmessage = (direction) => {
       // sets player number for beginning of game
-      if(direction.data == "player1") {
-        this.setState({player_num : 1})
+      if (direction.data == "player1") {
+        this.setState({ player_num: 1 })
       }
-      else if(direction.data == "player2") {
-        this.setState({player_num : 2})
+      else if (direction.data == "player2") {
+        this.setState({ player_num: 2 })
       }
       else {
         // Use directions given from server to update grid visuals.
-        this.setState({waiting : false})
+        this.setState({ waiting: false })
+        var reader = new FileReader();
+        var x = reader.readAsText(direction.data);
+        console.log("\ndata: ", x)
+        
         this.move(direction.data);
       }
     };
@@ -107,15 +111,15 @@ class App extends Component {
   }
 
   isValidMove(pos) {
+    console.log(pos)
     let r = pos[0], c = pos[1];
     let gridW = this.state.grid[0].length - 1;
     let gridH = this.state.grid.length - 1;
 
+    console.log('r: %s, c: %s, gridW: %s, gridH: %s', r, c, gridW, gridW)
+
     // check out-of-bounds
     if ((r < 0) || (c < 0) || (r > gridH) || (c > gridW)) {
-      console.log(r)
-      console.log(c)
-      console.log(this.state.spritePos)
       console.log("out of bounds!")
       return false;
     }
@@ -131,90 +135,59 @@ class App extends Component {
   }
 
   leftPress = () => {
-    if(this.state.waiting || this.state.victory) {
+    console.log("pressed")
+    if (this.state.waiting || this.state.victory) {
       return;
     }
-    if(this.state.player_num == 1) {
-      this.ws.send("left");
-    }
-    else {
-      this.ws.send("down")
-    }
-    this.setState({waiting : true});
+    // setTimeout(() => {
+    this.ws.send([this.state.player_num, -1]);
+    // }, 100);
+    this.setState({ waiting: true });
   };
 
   middlePress = () => {
-    if(this.state.waiting || this.state.victory) {
+    if (this.state.waiting || this.state.victory) {
       return;
     }
-    this.ws.send("pause");
-    this.setState({waiting : true});
+    this.ws.send([this.state.player_num, 0]);
+    this.setState({ waiting: true });
   };
 
   rightPress = () => {
-    if(this.state.waiting || this.state.victory) {
+    if (this.state.waiting || this.state.victory) {
       return;
     }
-    if(this.state.player_num == 1) {
-      this.ws.send("right");
-    }
-    else {
-      this.ws.send("up")
-    }
-    this.setState({waiting : true});
+    this.ws.send([this.state.player_num, 1]);
+    this.setState({ waiting: true });
 
   };
 
-  move = (direction) => {
-    if(direction == "pause") {
-      return;
-    }
+  move(delta) {
     let pos = this.state.spritePos;
-    let newPos = [pos[0], pos[1]];
-    if(direction == "right") {
-      newPos = [pos[0], pos[1] + 1];
-    }
-    else if (direction == "left") {
-      newPos = [pos[0], pos[1] - 1];
-    }
-    else if (direction == "up") {
-      newPos = [pos[0]-1, pos[1]];
-    }
-    else if (direction == "down") {
-      newPos = [pos[0]+1,pos[1]]
-    }
-    else if (direction == "upright") {
-      newPos = [pos[0]-1, pos[1] + 1];
-    }
-    else if (direction == "upleft") {
-      newPos = [pos[0]-1, pos[1] - 1];
-    }
-    else if (direction == "downright") {
-      newPos = [pos[0]+1, pos[1] + 1];
-    }
-    else if (direction == "downleft") {
-      newPos = [pos[0]+1, pos[1] - 1];
-    }
+    let newPos = [pos[0] + delta[0], pos[1] + delta[1]];
+    console.log('pos: ', pos)
+    console.log('delta: ', delta)
+
     if (this.isValidMove(newPos)) {
       this.updateSprite(newPos);
     }
   }
 
   nextLevelPress = () => {
-    if(this.state.victory) {
-      this.setState({ victory : false });
+    if (this.state.victory) {
+      this.setState({ victory: false });
       //this.setState({grid : this.props.anotherGrid});
-      let newVal = this.state.current_grid_number+1;
-      if(newVal > _grid.length-1) {
+      let newVal = this.state.current_grid_number + 1;
+      if (newVal > _grid.length - 1) {
         newVal = 0;
       }
-      this.setState({current_grid_number: newVal});
-      this.setState({spritePos: this.props.startPos});
-      if(this.state.player_num == 1) {
-        this.setState({player_num : 2 })
+      this.setState({ current_grid_number: newVal });
+      this.setState({ spritePos: this.props.startPos });
+      if (this.state.player_num == 1) {
+        this.setState({ player_num: 2 })
       }
       else {
-        this.setState({player_num : 1 })
+        this.setState({ player_num: 1 })
       }
       setTimeout(() => {
         this.updateGrid();
@@ -239,7 +212,7 @@ class App extends Component {
     newGrid[pos[0]][pos[1]] = 2;
     // update the grid
     if (_grid[this.state.current_grid_number][pos[0]][pos[1]] == 3) {
-      this.setState({victory:true})
+      this.setState({ victory: true })
     }
     this.setState({ grid: newGrid });
     this.render()
@@ -258,9 +231,11 @@ class App extends Component {
 
       for (let j = 0; j < row.length; j++) {
         const squareVal = row[j];
+        // add new GridSquare to row
         content.push(<GridSquare type={squareVal} key={squareCounter} />);
         squareCounter++;
       }
+      // add row to output
       output.push(<View style={styles.row} key={rowCounter}>{content}</View>);
       rowCounter++;
     }
@@ -268,8 +243,8 @@ class App extends Component {
     return output;
   }
 
-  button_left = function(options) {
-    if(this.state.player_num == 1){
+  button_left = function (options) {
+    if (this.state.player_num == 1) {
       return {
         transform: [{ rotate: '180deg' }],
         flex: 1,
@@ -277,21 +252,21 @@ class App extends Component {
     }
     else {
       return {
-        transform: [{ rotate: '90deg' }],
+        transform: [{ rotate: '270deg' }],
         flex: 1,
       }
     }
   }
 
-  button_right = function(options) {
-    if(this.state.player_num == 1){
+  button_right = function (options) {
+    if (this.state.player_num == 1) {
       return {
         flex: 1,
       }
     }
     else {
       return {
-        transform: [{ rotate: '270deg' }],
+        transform: [{ rotate: '90deg' }],
         flex: 1,
       }
     }
@@ -319,8 +294,8 @@ class App extends Component {
     }
   }
 
-  popupVictory = function(options) {
-    if(this.state.victory){
+  popupVictory = function (options) {
+    if (this.state.victory) {
       return {
         opacity: 1,
         zIndex: 10,
@@ -342,8 +317,8 @@ class App extends Component {
     }
   }
 
-  popupBox = function(options) {
-    if(this.state.waiting){
+  popupBox = function (options) {
+    if (this.state.waiting) {
       return {
         opacity: 1,
         zIndex: 10,
@@ -370,11 +345,11 @@ class App extends Component {
 
       <View style={styles.body}>
         <View style={this.popupBox()}>
-          <Image style = {styles.skip} resizeMode = 'contain' source = {require("./assets/wait.png")} />
+          <Image style={styles.skip} resizeMode='contain' source={require("./assets/wait.png")} />
         </View>
-        <TouchableHighlight style = {this.popupVictory()} onPress={this.nextLevelPress}>
-          <View style = {styles.skip}>
-            <Image style = {styles.skip} resizeMode = 'contain' source = {require("./assets/congrats.png")} />
+        <TouchableHighlight style={this.popupVictory()} onPress={this.nextLevelPress}>
+          <View style={styles.skip}>
+            <Image style={styles.skip} resizeMode='contain' source={require("./assets/congrats.png")} />
           </View>
         </TouchableHighlight>
         <View style={styles.gameview}>
