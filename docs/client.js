@@ -1,24 +1,13 @@
 console.log('WebSocket client script will run here.');
 
-const WebSocket = require('ws');
+var socket = new WebSocket('ws://localhost:8080');
 
-const ws = new WebSocket('wss://echo.websocket.org/', {
-  origin: 'https://websocket.org'
-});
+// Show a connected message when the WebSocket is opened.
+socket.onopen = function (event) {
+    console.log('WebSocket is connected at ', socket.url);
+    socket.send('I am sending this message from the client.');
+};
 
-ws.on('open', function open() {
-  console.log('connected');
-  ws.send(Date.now());
-});
-
-ws.on('close', function close() {
-  console.log('disconnected');
-});
-
-ws.on('message', function incoming(data) {
-  console.log(`Roundtrip time: ${Date.now() - data} ms`);
-
-  setTimeout(function timeout() {
-    ws.send(Date.now());
-  }, 500);
-});
+socket.onmessage = function (event) {
+    console.log('message send')
+};
