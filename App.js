@@ -87,7 +87,6 @@ class App extends Component {
 
   componentDidMount() {
 
-    this.ws.bufferType = "arraybuffer";
     //runs whenever message recieved from server
     this.ws.onmessage = (direction) => {
       // sets player number for beginning of game
@@ -100,10 +99,6 @@ class App extends Component {
       else {
         // Use directions given from server to update grid visuals.
         this.setState({ waiting: false })
-        var reader = new FileReader();
-        var x = reader.readAsText(direction.data);
-        console.log("\ndata: ", x)
-        
         this.move(direction.data);
       }
     };
@@ -163,8 +158,10 @@ class App extends Component {
   };
 
   move(delta) {
+    // var data = delta.replace(/[/[/])
+    var x = parseInt(delta[1]), y = parseInt(delta[3]);
     let pos = this.state.spritePos;
-    let newPos = [pos[0] + delta[0], pos[1] + delta[1]];
+    let newPos = [pos[0] + x, pos[1] + y];
     console.log('pos: ', pos)
     console.log('delta: ', delta)
 

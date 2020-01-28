@@ -7,7 +7,7 @@ var inputs = [Infinity, Infinity];
 var players = 0;
 
 wss.on('connection', function connection(ws) {
-  ws.bufferType = "arraybuffer";
+
   players++;
   console.log('\nconnected to player ', players);
   var id = players;
@@ -19,6 +19,8 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', message);
     console.log('running on ', id)
 
+    // if (players < 2) { return; }
+
     if (id == message[0]) {
       inputs[id - 1] = parseInt(message[2]);
       console.log('parsed: ', inputs[id-1])
@@ -26,7 +28,7 @@ wss.on('connection', function connection(ws) {
 
     if ((inputs[0] < Infinity) && (inputs[1] < Infinity)) {
       wss.clients.forEach(function each(client) {
-        client.send([1,0])
+        client.send(JSON.stringify(inputs))
       })
       console.log('sent: ', inputs)
       inputs = [Infinity, Infinity];
