@@ -2,17 +2,41 @@ import React, { Component } from "react";
 import { StyleSheet, View, Text, TouchableHighlight, Image } from 'react-native';
 
 const _grid = [
-  [1, 0, 0, 0],
+  [
+  [1, 0, 3, 0],
   [1, 1, 1, 0],
   [1, 1, 1, 0],
-  [1, 1, 1, 3]
-]
-
-const _grid2 = [
+  [1, 1, 1, 0]],
+  [
   [0, 0, 0, 1],
   [0, 1, 0, 0],
   [0, 1, 0, 1],
   [0, 1, 0, 3]
+  ],
+  [
+  [0, 0, 0, 1],
+  [1, 1, 0, 0],
+  [0, 0, 0, 1],
+  [3, 1, 0, 0]
+  ],
+  [
+  [0, 0, 0, 0],
+  [0, 1, 1, 0],
+  [0, 1, 0, 0],
+  [1, 3, 1, 0]
+  ],
+  [
+  [0, 0, 1, 1],
+  [0, 1, 0, 0],
+  [1, 0, 0, 1],
+  [0, 1, 1, 3]
+  ],
+  [
+  [0, 0, 0, 1],
+  [0, 1, 1, 0],
+  [0, 1, 0, 1],
+  [0, 0, 0, 3]
+  ]
 ]
 
 class GridSquare extends Component {
@@ -23,6 +47,7 @@ class GridSquare extends Component {
   render() {
     var img;
     switch (this.props.type) {
+      // Sets the visuals in each grid box based on the value at the given matrix index
       case 0:
         break;
       case 1:
@@ -51,13 +76,33 @@ class App extends Component {
     this.state = {
       player_num : 1,
       waiting : false,
-      victory : true,
+      victory : false,
+      grid_list: this.props.mainGridList,
       grid: this.props.mainGrid,
       spritePos: this.props.startPos,
+      current_grid_number : 0,
     };
+    // Building of connection to server
+    this.ws = new WebSocket('wss://echo.websocket.org');
   }
 
   componentDidMount() {
+
+    //runs whenever message recieved from server
+    this.ws.onmessage = (direction) => {
+      // sets player number for beginning of game
+      if(direction.data == "player1") {
+        this.setState({player_num : 1})
+      }
+      else if(direction.data == "player2") {
+        this.setState({player_num : 2})
+      }
+      else {
+        // Use directions given from server to update grid visuals.
+        this.setState({waiting : false})
+        this.move(direction.data);
+      }
+    };
     this.updateGrid();
   }
 
@@ -65,9 +110,12 @@ class App extends Component {
     let r = pos[0], c = pos[1];
     let gridW = this.state.grid[0].length - 1;
     let gridH = this.state.grid.length - 1;
-    
+
     // check out-of-bounds
     if ((r < 0) || (c < 0) || (r > gridH) || (c > gridW)) {
+      console.log(r)
+      console.log(c)
+      console.log(this.state.spritePos)
       console.log("out of bounds!")
       return false;
     }
@@ -83,34 +131,84 @@ class App extends Component {
   }
 
   leftPress = () => {
-    // console.log('left press');
-    let pos = this.state.spritePos;
-
-    // if (this.state.player_num == 1) {
-    let newPos = [pos[0], pos[1] - 1];
-
-    if (this.isValidMove(newPos)) {
-      this.updateSprite(newPos);
+    if(this.state.waiting || this.state.victory) {
+      return;
     }
-    // }
+    if(this.state.player_num == 1) {
+      this.ws.send("left");
+    }
+    else {
+      this.ws.send("down")
+    }
+    this.setState({waiting : true});
   };
 
-  middlePress = () => { };
+  middlePress = () => {
+    if(this.state.waiting || this.state.victory) {
+      return;
+    }
+    this.ws.send("pause");
+    this.setState({waiting : true});
+  };
 
   rightPress = () => {
-    let pos = this.state.spritePos;
-    // this.updateSprite([pos[0], pos[1] + 1])
-    let newPos = [pos[0], pos[1] + 1];
+    if(this.state.waiting || this.state.victory) {
+      return;
+    }
+    if(this.state.player_num == 1) {
+      this.ws.send("right");
+    }
+    else {
+      this.ws.send("up")
+    }
+    this.setState({waiting : true});
 
+  };
+
+  move = (direction) => {
+    if(direction == "pause") {
+      return;
+    }
+    let pos = this.state.spritePos;
+    let newPos = [pos[0], pos[1]];
+    if(direction == "right") {
+      newPos = [pos[0], pos[1] + 1];
+    }
+    else if (direction == "left") {
+      newPos = [pos[0], pos[1] - 1];
+    }
+    else if (direction == "up") {
+      newPos = [pos[0]-1, pos[1]];
+    }
+    else if (direction == "down") {
+      newPos = [pos[0]+1,pos[1]]
+    }
+    else if (direction == "upright") {
+      newPos = [pos[0]-1, pos[1] + 1];
+    }
+    else if (direction == "upleft") {
+      newPos = [pos[0]-1, pos[1] - 1];
+    }
+    else if (direction == "downright") {
+      newPos = [pos[0]+1, pos[1] + 1];
+    }
+    else if (direction == "downleft") {
+      newPos = [pos[0]+1, pos[1] - 1];
+    }
     if (this.isValidMove(newPos)) {
       this.updateSprite(newPos);
     }
-  };
+  }
 
   nextLevelPress = () => {
     if(this.state.victory) {
       this.setState({ victory : false });
-      this.setState({grid : this.props.anotherGrid});
+      //this.setState({grid : this.props.anotherGrid});
+      let newVal = this.state.current_grid_number+1;
+      if(newVal > _grid.length-1) {
+        newVal = 0;
+      }
+      this.setState({current_grid_number: newVal});
       this.setState({spritePos: this.props.startPos});
       if(this.state.player_num == 1) {
         this.setState({player_num : 2 })
@@ -118,13 +216,15 @@ class App extends Component {
       else {
         this.setState({player_num : 1 })
       }
-      this.updateGrid();
+      setTimeout(() => {
+        this.updateGrid();
+      }, 0);
+
     }
   };
 
   updateSprite(pos) {
     this.setState({ spritePos: pos });
-
     // setState is async, this timeout lets it finish before rendering
     setTimeout(() => {
       this.updateGrid();
@@ -133,12 +233,16 @@ class App extends Component {
 
   updateGrid() {
     // deep copy blank grid
-    let newGrid = JSON.parse(JSON.stringify(_grid));
+    let newGrid = JSON.parse(JSON.stringify(_grid[this.state.current_grid_number]));
     // add sprite
     let pos = this.state.spritePos;
     newGrid[pos[0]][pos[1]] = 2;
     // update the grid
-    this.setState({ grid: newGrid })
+    if (_grid[this.state.current_grid_number][pos[0]][pos[1]] == 3) {
+      this.setState({victory:true})
+    }
+    this.setState({ grid: newGrid });
+    this.render()
   };
 
   renderGrid() {
@@ -201,6 +305,7 @@ class App extends Component {
         flexDirection: 'row',
         borderColor: 'black',
         borderWidth: 2,
+        backgroundColor: "pink"
       }
     }
     else {
@@ -209,6 +314,7 @@ class App extends Component {
         flexDirection: 'row',
         borderColor: 'black',
         borderWidth: 2,
+        backgroundColor: "pink"
       }
     }
   }
@@ -219,10 +325,9 @@ class App extends Component {
         opacity: 1,
         zIndex: 10,
         position: "absolute",
-        height: "40%",
-        width: "40%",
+        height: "50%",
+        width: "50%",
         alignSelf: "center",
-        backgroundColor: "blue"
       }
     }
     else {
@@ -230,8 +335,8 @@ class App extends Component {
         opacity: 0,
         zIndex: 10,
         position: "absolute",
-        height: "40%",
-        width: "40%",
+        height: "50%",
+        width: "50%",
         alignSelf: "center",
       }
     }
@@ -243,10 +348,9 @@ class App extends Component {
         opacity: 1,
         zIndex: 10,
         position: "absolute",
-        height: "30%",
-        width: "30%",
+        height: "50%",
+        width: "50%",
         alignSelf: "center",
-        backgroundColor: "green"
       }
     }
     else {
@@ -254,8 +358,8 @@ class App extends Component {
         opacity: 0,
         zIndex: 10,
         position: "absolute",
-        height: "30%",
-        width: "30%",
+        height: "50%",
+        width: "50%",
         alignSelf: "center",
       }
     }
@@ -266,11 +370,11 @@ class App extends Component {
 
       <View style={styles.body}>
         <View style={this.popupBox()}>
-          <Text> Waiting for other player. (Switch with waiting image later) </Text>
+          <Image style = {styles.skip} resizeMode = 'contain' source = {require("./assets/wait.png")} />
         </View>
         <TouchableHighlight style = {this.popupVictory()} onPress={this.nextLevelPress}>
-          <View>
-            <Text> Victory!. (Switch with image later) </Text>
+          <View style = {styles.skip}>
+            <Image style = {styles.skip} resizeMode = 'contain' source = {require("./assets/congrats.png")} />
           </View>
         </TouchableHighlight>
         <View style={styles.gameview}>
@@ -278,19 +382,19 @@ class App extends Component {
         </View>
 
         <View style={styles.controls}>
-          <TouchableHighlight style={styles.button} onPress={this.leftPress}>
+          <TouchableHighlight style={this.opacity()} onPress={this.leftPress}>
             <View style={this.opacity()}>
               <Image style={this.button_left()} resizeMode='contain' source={require("./assets/rightarrow.png")} />
             </View>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.button} onPress={this.middlePress}>
+          <TouchableHighlight style={this.opacity()} onPress={this.middlePress}>
             <View style={this.opacity()}>
               <Image style={styles.skip} resizeMode='contain' source={require("./assets/button.png")} />
             </View>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.button} onPress={this.rightPress}>
+          <TouchableHighlight style={this.opacity()} onPress={this.rightPress}>
             <View style={this.opacity()}>
               <Image style={this.button_right()} resizeMode='contain' source={require("./assets/rightarrow.png")} />
             </View>
@@ -304,9 +408,9 @@ class App extends Component {
 
 App.defaultProps = {
   // 0 = empty, 1 = obstacle, 2 = sprite, 3 = final
-  mainGrid: _grid,
-  anotherGrid : _grid2,
-  startPos: [0, 0],
+  mainGrid: _grid[0],
+  mainGridList: _grid,
+  startPos: [0, 1],
 };
 
 const styles = StyleSheet.create({
