@@ -1,0 +1,21 @@
+{
+  "name": "socket-server",
+  "version": "1.0.0",
+  "description": "server for collab-game websocket",
+  "main": "server.js",
+  "scripts": {
+    "test": "./test-websocket.html",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meier3/collab-game/docs.git"
+  },
+  "author": "Danica Meier",
+  "license": "ISC",
+  "dependencies": {
+    "node-static": "^0.7.11",
+    "websocket": "^1.0.31",
+    "ws": "^7.2.1"
+  }
+}

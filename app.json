@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "tryagain",
-    "slug": "tryagain",
+    "name": "telecollaborative-game",
+    "slug": "telecollaborative-game",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [

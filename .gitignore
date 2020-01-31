@@ -12,5 +12,11 @@ web-report/
 yarn.lock
 package-lock.json
 
+server/node_modules/**/*
+server/package-lock.json
+server/yarn.lock
+server/npm-debug.*
+server/yarn-error.log
+
 # macOS
 .DS_Store

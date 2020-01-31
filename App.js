@@ -130,7 +130,6 @@ class App extends Component {
   }
 
   leftPress = () => {
-    console.log("pressed")
     if (this.state.waiting || this.state.victory) {
       return;
     }
@@ -157,13 +156,14 @@ class App extends Component {
 
   };
 
-  move(delta) {
-    // var data = delta.replace(/[/[/])
-    var x = parseInt(delta[1]), y = parseInt(delta[3]);
+  move(data) {
+    var delta = data.replace(/[\[\]]/gi, '').split(',');
+    
+    var x = parseInt(delta[0]), y = parseInt(delta[1]);
     let pos = this.state.spritePos;
-    let newPos = [pos[0] + x, pos[1] + y];
+    let newPos = [pos[0] + y, pos[1] + x];
     console.log('pos: ', pos)
-    console.log('delta: ', delta)
+    console.log('delta: ', delta);
 
     if (this.isValidMove(newPos)) {
       this.updateSprite(newPos);
@@ -172,6 +172,7 @@ class App extends Component {
 
   nextLevelPress = () => {
     if (this.state.victory) {
+      this.ws.send('next level');
       this.setState({ victory: false });
       //this.setState({grid : this.props.anotherGrid});
       let newVal = this.state.current_grid_number + 1;
